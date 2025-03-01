@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        :root {
+            --box-width: 24rem;
+            --box-height: 12rem;
+            --text-width: 22rem;
+            --text-height: 10rem;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: row;
+            min-height: 100vh;
+        }
+
+        .distracted {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            width: 15%;
+            min-height: 100vh;
+            height: 100%;
+            background-color: lightblue;
+            padding-top: 2rem;
+        }
+
+        .concurrent {
+            display: flex;
+            width: 15%;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            height: 100%;
+            background-color: lightgreen;
+            padding-top: 2rem;
+        }
+
+        h1 {
+            font-family: sans-serif;
+            color: red;
+        }
+        .container {
+            display: flex;
+            width: 70%;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: auto;
+            gap: 20px;
+        }
+        .box {
+            width: var(--box-width);
+            height: var(--box-height);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .box-1 { background-color: red; }
+        .box-2 { background-color: blue; }
+        .box-3 { background-color: green; }
+        .box-4 { background-color: yellow; }
+        .box-5 { background-color: purple; }
+
+        .text {
+            background-color: beige;
+            width: var(--text-width);
+            height: var(--text-height);
+            resize: none;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .new-card {
+            margin: 20px;
+        }
+
+        .vl{
+            border-left: 0.25rem solid black;
+            height: 100px;
+        }
+    
+        .arrow-down {
+            margin-top: -1.5rem;
+            width: 0;
+            height: 0;
+            border-left: 0.85rem solid transparent;
+            border-right: 0.85rem solid transparent;
+            border-top: 0.85rem solid #000;
+        }
+    </style>
+</head>
+<body>
+    <div class="distracted">
+        <h1>Im so distracted</h1>        
+    </div>
+
+    <div class="container">
+        <h1>This is what im going to do <br> RIGHT NOW</h1>
+        
+        <div class="box box-1">
+            <textarea class="text"></textarea>
+        </div>
+
+        <div class="button-container">
+            <button class="new-card">new</button>
+        </div>
+    </div>
+
+    <div class="concurrent">
+        <h1>Im so concurrent</h1>
+    </div>
+
+    <script>
+        const newCard = document.querySelector('.new-card');
+        let boxCount = 1;
+
+        newCard.addEventListener('click', () => {
+            boxCount++;
+            const newBox = document.createElement('div');
+            newBox.className = `box box-${(boxCount % 5) + 1}`; // Cycle through box classes
+            const newTextArea = document.createElement('textarea');
+            newTextArea.className = 'text';
+            newBox.appendChild(newTextArea);
+
+            const container = document.querySelector('.container');
+            const buttonContainer = document.querySelector('.button-container');
+            container.appendChild(newBox);
+
+            // line + arrow
+            const vl = document.createElement('div');
+            vl.className = 'vl';
+            const arrowDown = document.createElement('div');
+            arrowDown.className = 'arrow-down';
+
+            // inserting
+            container.insertBefore(vl, buttonContainer);
+            container.insertBefore(arrowDown, buttonContainer);
+            container.insertBefore(newBox, buttonContainer);
+        });
+    </script>
+</body>
+</html>
