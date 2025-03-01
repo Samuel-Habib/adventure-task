@@ -12,35 +12,48 @@
             --text-height: 10rem;
         }
 
-        body {
+        html, body {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            min-height: 100vh;
+            height: 100%;
+        }
+
+        body {
             display: flex;
             flex-direction: row;
-            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .page-wrapper {
+            display: flex;
+            width: 100%;
+            min-height: 100%;
         }
 
         .distracted {
+            position: sticky;
+            top: 0;
             display: flex;
             justify-content: center;
             align-items: flex-start;
             width: 15%;
-            min-height: 100vh;
-            height: 100%;
             background-color: lightblue;
             padding-top: 2rem;
+            height: 100vh;
         }
 
         .concurrent {
+            position: sticky;
+            top: 0;
             display: flex;
             width: 15%;
             justify-content: center;
             align-items: flex-start;
-            min-height: 100vh;
-            height: 100%;
             background-color: lightgreen;
             padding-top: 2rem;
+            height: 100vh;
         }
 
         h1 {
@@ -51,10 +64,10 @@
             display: flex;
             width: 70%;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            height: auto;
-            gap: 20px;
+            padding: 2rem 0;
+            gap: 1rem;
+            min-height: 100%;
         }
         .box {
             width: var(--box-width);
@@ -102,24 +115,26 @@
     </style>
 </head>
 <body>
-    <div class="distracted">
-        <h1>Im so distracted</h1>        
-    </div>
-
-    <div class="container">
-        <h1>This is what im going to do <br> RIGHT NOW</h1>
-        
-        <div class="box box-1">
-            <textarea class="text"></textarea>
+    <div class="page-wrapper">
+        <div class="distracted">
+            <h1>Im so distracted</h1>        
         </div>
 
-        <div class="button-container">
-            <button class="new-card">new</button>
-        </div>
-    </div>
+        <div class="container">
+            <h1>This is what im going to do <br> RIGHT NOW</h1>
+            
+            <div class="box box-1">
+                <textarea class="text"></textarea>
+            </div>
 
-    <div class="concurrent">
-        <h1>Im so concurrent</h1>
+            <div class="button-container">
+                <button class="new-card">new</button>
+            </div>
+        </div>
+
+        <div class="concurrent">
+            <h1>Im so concurrent</h1>
+        </div>
     </div>
 
     <script>
@@ -128,26 +143,31 @@
 
         newCard.addEventListener('click', () => {
             boxCount++;
+            // Create new box with textarea
             const newBox = document.createElement('div');
             newBox.className = `box box-${(boxCount % 5) + 1}`; // Cycle through box classes
             const newTextArea = document.createElement('textarea');
             newTextArea.className = 'text';
             newBox.appendChild(newTextArea);
 
-            const container = document.querySelector('.container');
-            const buttonContainer = document.querySelector('.button-container');
-            container.appendChild(newBox);
-
-            // line + arrow
+            // Create vertical line and arrow
             const vl = document.createElement('div');
             vl.className = 'vl';
             const arrowDown = document.createElement('div');
             arrowDown.className = 'arrow-down';
 
-            // inserting
+            // Get references
+            const container = document.querySelector('.container');
+            const buttonContainer = document.querySelector('.button-container');
+            
+            // Add elements to DOM
             container.insertBefore(vl, buttonContainer);
             container.insertBefore(arrowDown, buttonContainer);
             container.insertBefore(newBox, buttonContainer);
+            
+            // Ensure sidebars extend with content
+            const pageHeight = container.scrollHeight;
+            document.querySelector('.page-wrapper').style.minHeight = pageHeight + 'px';
         });
     </script>
 </body>
