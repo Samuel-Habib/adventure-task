@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "rules": [
+    {
+      "name": "Require pull requests for all commits",
+      "type": "commit",
+      "conditions": {
+        "allowed_direct_commits": []
+      },
+      "enforcement": "required"
+    },
+    {
+      "name": "Only administrator can approve pull requests",
+      "type": "pull_request",
+      "conditions": {
+        "approvals": {
+          "required": 1,
+          "allowed_approvers": ["Samuel-Habib"]
+        }
+      },
+      "enforcement": "required"
+    },
+    {
+      "name": "Require GitGuardian check to pass",
+      "type": "status_check",
+      "conditions": {
+        "checks": ["GitGuardian"]
+      },
+      "enforcement": "required"
+    }
+  ]
+}
+
