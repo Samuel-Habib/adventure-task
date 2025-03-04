@@ -4,115 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <style>
-        :root {
-            --box-width: 24rem;
-            --box-height: 12rem;
-            --text-width: 22rem;
-            --text-height: 10rem;
-        }
-
-        html, body {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            min-height: 100vh;
-            height: 100%;
-        }
-
-        body {
-            display: flex;
-            flex-direction: row;
-            overflow-x: hidden;
-        }
-
-        .page-wrapper {
-            display: flex;
-            width: 100%;
-            min-height: 100%;
-        }
-
-        .distracted {
-            position: sticky;
-            top: 0;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            width: 15%;
-            background-color: lightblue;
-            padding-top: 2rem;
-            height: 100vh;
-        }
-
-        .concurrent {
-            position: sticky;
-            top: 0;
-            display: flex;
-            width: 15%;
-            justify-content: center;
-            align-items: flex-start;
-            background-color: lightgreen;
-            padding-top: 2rem;
-            height: 100vh;
-        }
-
-        h1 {
-            font-family: sans-serif;
-            color: red;
-        }
-        .container {
-            display: flex;
-            width: 70%;
-            flex-direction: column;
-            align-items: center;
-            padding: 2rem 0;
-            gap: 1rem;
-            min-height: 100%;
-        }
-        .box {
-            width: var(--box-width);
-            height: var(--box-height);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .box-1 { background-color: red; }
-        .box-2 { background-color: blue; }
-        .box-3 { background-color: green; }
-        .box-4 { background-color: yellow; }
-        .box-5 { background-color: purple; }
-
-        .text {
-            background-color: beige;
-            width: var(--text-width);
-            height: var(--text-height);
-            resize: none;
-        }
-
-        .button-container {
-            display: flex;
-            justify-content: center;
-            width: 100%;
-        }
-
-        .new-card {
-            margin: 20px;
-        }
-
-        .vl{
-            border-left: 0.25rem solid black;
-            height: 100px;
-        }
-    
-        .arrow-down {
-            margin-top: -1.5rem;
-            width: 0;
-            height: 0;
-            border-left: 0.85rem solid transparent;
-            border-right: 0.85rem solid transparent;
-            border-top: 0.85rem solid #000;
-        }
-    </style>
+    <link rel="stylesheet" href="./css/index.css">    
 </head>
 <body>
     <div class="page-wrapper">
@@ -123,9 +15,10 @@
         <div class="container">
             <h1>This is what im going to do <br> RIGHT NOW</h1>
             
-            <div class="box box-1">
+            <form class="box box-1" >
                 <textarea class="text"></textarea>
-            </div>
+                <button type="submit">Submit</button>
+            </form>
 
             <div class="button-container">
                 <button class="new-card">new</button>
@@ -138,18 +31,29 @@
     </div>
 
     <script>
+
+
+        
+        // add a new card
         const newCard = document.querySelector('.new-card');
         let boxCount = 1;
 
+
+
         newCard.addEventListener('click', () => {
             boxCount++;
-            // Create new box with textarea
-            const newBox = document.createElement('div');
+            const newBox = document.createElement('form');
+            newBox.setAttribute('id', `box-${boxCount}`);
+            const newButton = document.createElement('button');
+            newButton.textContent = 'Submit';
+            newButton.type = 'submit';
             newBox.className = `box box-${(boxCount % 5) + 1}`; // Cycle through box classes
             const newTextArea = document.createElement('textarea');
             newTextArea.className = 'text';
             newBox.appendChild(newTextArea);
-
+            newBox.appendChild(newButton);
+            
+            
             // Create vertical line and arrow
             const vl = document.createElement('div');
             vl.className = 'vl';
@@ -169,6 +73,23 @@
             const pageHeight = container.scrollHeight;
             document.querySelector('.page-wrapper').style.minHeight = pageHeight + 'px';
         });
+
+        let formArray = [];
+        for (let i = 1; i <= boxCount; i++) { 
+            const box = document.getElementById(`box-${i}`);
+            if (box) {
+            formArray.push(box);
+            }
+        }
+
+        formArray.forEach(form => {
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const text = form.querySelector('.text').value;
+                console.log(text);
+            });
+        });
+
     </script>
 </body>
 </html>

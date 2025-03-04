@@ -1,6 +1,5 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-// Access your API key as an environment variable (recommended)
 const API_KEY = process.env.GEMINI_API_KEY;
 
 async function run() {
@@ -15,7 +14,6 @@ async function run() {
     const text = response.text();
     console.log(text);
 
-    // More complex prompt and configuration:
     const complexPrompt = `Summarize the following article in three bullet points:
 
     [Article Text Here]`;
@@ -31,7 +29,6 @@ async function run() {
     const complexText = complexResponse.text();
     console.log(complexText);
 
-    // Chat example:
     const chat = model.startChat({
         history: [],
     });
@@ -48,7 +45,6 @@ async function run() {
 
 run();
 
-//Example using a local image with gemini-pro-vision.
 async function runVision() {
     const { GoogleGenerativeAI, Part } = require("@google/generative-ai");
     const fs = require("fs").promises; // Use promises version of fs
