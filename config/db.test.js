@@ -12,7 +12,10 @@ before(async function() {
 	}
 	
 	try {
-		client = await MongoClient.connect(process.env.MONGO_URL);
+		client = await MongoClient.connect(process.env.MONGO_URL, {
+			useNewUrlParser: true,
+			useUnifiedTopology: true,
+		});
 		db = client.db('adventure-task');
 		console.log('Connected to MongoDB for testing');
 	} catch (error) {
@@ -29,7 +32,23 @@ after(async function() {
 });
 
 describe('Database tests', function() {
-	it('hello world!', function() {
-		assert.strictEqual(1 + 1, 2);
+	it('should insert a document into collection', async function() {
+		const collection = db.collection('testCollection');
+		const result = await collection.insertOne({ name: 'test', value: 1 });
+		assert.strictEqual(result.acknowledged, true);
+		assert.ok(result.insertedId);
+	});
+
+	it('should find a document in collection', async function() {
+		const collection = db.collection('testCollection');
+		const doc = await collection.findOne({ name: 'test' });
+		assert.strictEqual(doc.name, 'test');
+		assert.strictEqual(doc.value, 1);
+	});
+
+	it('should delete a document from collection', async function() {
+		const collection = db.collection('testCollection');
+		const result = await collection.deleteOne({ name: 'test' });
+		assert.strictEqual(result.deletedCount, 1);
 	});
 });
