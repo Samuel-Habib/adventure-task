@@ -14,15 +14,11 @@
 
         <div class="container">
             <h1>This is what im going to do <br> RIGHT NOW</h1>
-            
-            <form class="box box-1" >
-                <textarea class="text"></textarea>
+
+            <form id="top-form">
+                <input id="top-input" type="text" name="" id="">
                 <button type="submit">Submit</button>
             </form>
-
-            <div class="button-container">
-                <button class="new-card">new</button>
-            </div>
         </div>
 
         <div class="concurrent">
@@ -31,28 +27,112 @@
     </div>
 
     <script>
+        let boxCount = 0;
 
-
-        
-        // add a new card
-        const newCard = document.querySelector('.new-card');
-        let boxCount = 1;
-
-
-
-        newCard.addEventListener('click', () => {
-            boxCount++;
-            const newBox = document.createElement('form');
-            newBox.setAttribute('id', `box-${boxCount}`);
-            const newButton = document.createElement('button');
-            newButton.textContent = 'Submit';
-            newButton.type = 'submit';
-            newBox.className = `box box-${(boxCount % 5) + 1}`; // Cycle through box classes
-            const newTextArea = document.createElement('textarea');
-            newTextArea.className = 'text';
-            newBox.appendChild(newTextArea);
-            newBox.appendChild(newButton);
+        // Function to create a task box with delete button
+        function createTaskBox(taskTitle, taskId) {
+            const newBox = document.createElement('div');
+            const boxId = `box-${boxCount}`;
+            newBox.setAttribute('id', boxId);
+            newBox.className = `box box-${(boxCount % 5) + 1}`;
+            newBox.dataset.taskId = taskId || ''; // Store the task ID for delete operation
             
+            // Create task text element
+            const taskText = document.createElement('p');
+            taskText.textContent = taskTitle;
+            newBox.appendChild(taskText);
+            
+            // Create delete button
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-btn';
+            deleteBtn.innerHTML = '&times;'; // × symbol
+            deleteBtn.addEventListener('click', function() {
+                // Delete from backend if we have a task ID
+                if (taskId) {
+                    fetch(`/api/tasks/${taskId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        }
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            console.log(`Task with ID ${taskId} deleted`);
+                        } else {
+                            console.error('Failed to delete task');
+                            return;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        return;
+                    });
+                }
+                
+                // Find elements to remove
+                const boxToRemove = document.getElementById(boxId);
+                let vlToRemove = boxToRemove.previousElementSibling;
+                let arrowToRemove = boxToRemove.previousElementSibling?.previousElementSibling;
+                
+                // If this is not the first box, remove the connecting elements
+                if (vlToRemove && vlToRemove.className === 'arrow-down') {
+                    arrowToRemove = vlToRemove;
+                    vlToRemove = arrowToRemove.previousElementSibling;
+                }
+                
+                // Remove elements from DOM
+                if (vlToRemove && vlToRemove.className === 'vl') {
+                    vlToRemove.remove();
+                }
+                if (arrowToRemove && arrowToRemove.className === 'arrow-down') {
+                    arrowToRemove.remove();
+                }
+                boxToRemove.remove();
+            });
+            
+            newBox.appendChild(deleteBtn);
+            return newBox;
+        }
+
+        fetch('/api/tasks', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data);
+            data.forEach(task => {
+                boxCount++;
+                
+                // Create vertical line and arrow (for all tasks except the first one)
+                if (boxCount > 1) {
+                    const vl = document.createElement('div');
+                    vl.className = 'vl';
+                    const arrowDown = document.createElement('div');
+                    arrowDown.className = 'arrow-down';
+                    
+                    const container = document.querySelector('.container');
+                    container.appendChild(vl);
+                    container.appendChild(arrowDown);
+                }
+                
+                // Create the task box with delete button
+                const newBox = createTaskBox(task.title, task._id);
+                
+                const container = document.querySelector('.container');
+                container.appendChild(newBox);
+            });
+        });
+
+        const topInput = document.getElementById('top-input');
+        const topForm = document.getElementById('top-form');
+        topForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            if(!topInput.value.trim()) return;
+            
+            boxCount++;
             
             // Create vertical line and arrow
             const vl = document.createElement('div');
@@ -62,34 +142,37 @@
 
             // Get references
             const container = document.querySelector('.container');
-            const buttonContainer = document.querySelector('.button-container');
             
-            // Add elements to DOM
-            container.insertBefore(vl, buttonContainer);
-            container.insertBefore(arrowDown, buttonContainer);
-            container.insertBefore(newBox, buttonContainer);
-            
-            // Ensure sidebars extend with content
-            const pageHeight = container.scrollHeight;
-            document.querySelector('.page-wrapper').style.minHeight = pageHeight + 'px';
-        });
-
-        let formArray = [];
-        for (let i = 1; i <= boxCount; i++) { 
-            const box = document.getElementById(`box-${i}`);
-            if (box) {
-            formArray.push(box);
-            }
-        }
-
-        formArray.forEach(form => {
-            form.addEventListener('submit', (e) => {
-                e.preventDefault();
-                const text = form.querySelector('.text').value;
-                console.log(text);
+            fetch('/api/tasks', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    title: topInput.value,
+                    description: 'Description',
+                    completed: false,
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                
+                // Add elements to DOM
+                container.appendChild(vl);
+                container.appendChild(arrowDown);
+                
+                // Create task box with the returned task ID
+                const newBox = createTaskBox(topInput.value, data._id);
+                container.appendChild(newBox);
+                
+                // Clear the input field
+                topInput.value = '';
+            })
+            .catch((error) => {
+                console.error('Error:', error);
             });
         });
-
     </script>
 </body>
 </html>
